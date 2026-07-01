@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>My Movie reviews</title>
+    <link rel="stylesheet" href="{% static 'review/style.css' %}">
+</head>
+<body>
+    <header class="site-header">
+        <h1 class="logo">my <span>Movie</span> reviews</h1>
+        <a href="{% url 'review_create' %}" class="new-btn">Add a New review</a>
+    </header>
+
+    <div class="container">
+        <div class="sort-bar">
+            <a href="?sort=title">제목순</a>
+            <a href="?sort=-rating">별점 높은순</a>
+            <a href="?sort=running_time">러닝타임순</a>
+        </div>
+
+        <div class="card-grid">
+            {% for review in reviews %}
+            <div class="card">
+                <h3 class="card-title">
+                    <a href="{% url 'review_detail' review.id %}">{{ review.title }}</a>
+                </h3>
+                <p class="meta"><span>개봉년도</span> {{ review.release_year }}년</p>
+                <p class="meta"><span>장르</span> {{ review.genre }}</p>
+                <p class="meta"><span>별점</span> {{ review.rating }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

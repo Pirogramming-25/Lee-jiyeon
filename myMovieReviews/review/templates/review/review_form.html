@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>My Movie reviews</title>
+</head>
+<body>
+    <h1><a href="{% url 'review_list' %}">my Movie reviews</a></h1>
+    <hr>
+
+    <h2>Movie review 🍿</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+</body>
+</html>
