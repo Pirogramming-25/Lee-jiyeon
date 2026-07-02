@@ -1,0 +1,4 @@
+myMovieReviews/venv/
+myMovieReviews/db.sqlite3
+**/__pycache__/
+*.pyc
