@@ -1,0 +1,33 @@
+{% extends 'idea/base.html' %}
+
+{% block content %}
+    <h1>Idea Detail</h1>
+
+    <div class="idea-detail">
+        {% if idea.image %}
+            <img src="{{ idea.image.url }}" alt="{{ idea.title }}" width="200">
+        {% endif %}
+
+        <h2>
+            {{ idea.title }}
+            <a href="{% url 'idea_star' idea.pk %}">
+                {% if idea.is_starred %}★{% else %}☆{% endif %}
+            </a>
+        </h2>
+
+        <p>1) 아이디어 관심도</p>
+        <p>{{ idea.interest }}</p>
+
+        <p>2) 예상 개발툴</p>
+        <p><a href="{% url 'devtool_detail' idea.devtool.pk %}">{{ idea.devtool.name }}</a></p>
+
+        <p>3) 아이디어 설명</p>
+        <p>{{ idea.content }}</p>
+    </div>
+
+    <div class="detail-buttons">
+        <a href="{% url 'idea_delete' idea.pk %}">삭제</a>
+        <a href="{% url 'idea_list' %}">목록</a>
+        <a href="{% url 'idea_update' idea.pk %}">수정</a>
+    </div>
+{% endblock %}

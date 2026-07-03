@@ -1,0 +1,17 @@
+{% extends 'idea/base.html' %}
+
+{% block content %}
+    <h1>DevTool List</h1>
+    <p>개발툴 목록 페이지입니다.</p>
+
+    <div class="devtool-list">
+        {% for devtool in devtools %}
+        <div class="devtool-row">
+            <a href="{% url 'devtool_detail' devtool.pk %}">{{ devtool.name }}</a>
+            <span>{{ devtool.kind }}</span>
+            <span>{{ devtool.content }}</span>
+        </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}
