@@ -1,0 +1,38 @@
+{% extends 'idea/base.html' %}
+
+{% block content %}
+    <h1>Idea List</h1>
+    <p>나의 아이디어를 잊지 말고 기록해두세요</p>
+
+    <div class="sort-bar">
+        <a href="?sort=title">이름순</a>
+        <a href="?sort=-created_at">최신순</a>
+        <a href="?sort=created_at">등록순</a>
+        <a href="?sort=-interest">관심도순</a>
+    </div>
+
+    <div class="idea-grid">
+        {% for idea in ideas %}
+        <div class="idea-card">
+            <a href="{% url 'idea_star' idea.pk %}">
+                {% if idea.is_starred %}★{% else %}☆{% endif %}
+            </a>
+
+            {% if idea.image %}
+                <img src="{{ idea.image.url }}" alt="{{ idea.title }}" width="150">
+            {% endif %}
+
+            <h3>
+                <a href="{% url 'idea_detail' idea.pk %}">{{ idea.title }}</a>
+            </h3>
+            <p>예상 개발툴 : {{ idea.devtool.name }}</p>
+            <p>
+                아이디어 관심도 :
+                <a href="{% url 'idea_interest' idea.pk 'down' %}">-</a>
+                {{ idea.interest }}
+                <a href="{% url 'idea_interest' idea.pk 'up' %}">+</a>
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}

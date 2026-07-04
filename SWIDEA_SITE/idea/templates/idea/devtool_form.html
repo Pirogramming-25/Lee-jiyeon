@@ -1,0 +1,12 @@
+{% extends 'idea/base.html' %}
+
+{% block content %}
+    <h1>DevTool Register</h1>
+    <p>개발툴 등록 페이지입니다.</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">SUBMIT</button>
+    </form>
+{% endblock %}

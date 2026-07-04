@@ -1,4 +1,11 @@
+# myMovieReviews
 myMovieReviews/venv/
 myMovieReviews/db.sqlite3
+
+# SWIDEA_SITE
+SWIDEA_SITE/venv/
+SWIDEA_SITE/db.sqlite3
+
+# 공통
 **/__pycache__/
 *.pyc
