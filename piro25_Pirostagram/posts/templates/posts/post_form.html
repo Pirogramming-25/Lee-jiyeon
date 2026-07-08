@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="UTF-8"><title>게시글 작성</title></head>
+<body>
+    <h1>게시글 만들기</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">게시</button>
+    </form>
+    <a href="{% url 'post_list' %}">홈으로</a>
+</body>
+</html>
