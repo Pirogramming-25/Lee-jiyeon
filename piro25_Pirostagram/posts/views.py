@@ -10,12 +10,11 @@ from django.db.models import Q
 
 def post_list(request):
     if request.user.is_authenticated:
-        # 내가 팔로우한 사람들 + 나
-        following_users = request.user.profile.following.all()
+        following_users = list(request.user.profile.following.all())
+        following_users.append(request.user)    
         posts = Post.objects.filter(author__in=following_users).order_by('-created_at')
         stories = Story.objects.filter(author__in=following_users).order_by('-created_at')
-        # 추천 유저 (내가 팔로우 안 한 사람들)
-        suggested = User.objects.exclude(id=request.user.id).exclude(id__in=following_users)
+        suggested = User.objects.exclude(id=request.user.id).exclude(id__in=request.user.profile.following.all())
     else:
         posts = Post.objects.all().order_by('-created_at')
         stories = Story.objects.none()
