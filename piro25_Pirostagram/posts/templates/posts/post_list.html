@@ -1,0 +1,190 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Pirostagram</title>
+    <link rel="stylesheet" href="{% static 'posts/style.css' %}">
+</head>
+<body>
+    <!-- 사이드바 -->
+    <div class="sidebar">
+        <h1>Pirostagram</h1>
+        <a href="{% url 'post_list' %}">홈</a>
+        <a href="{% url 'user_search' %}">유저 검색</a>
+        <a href="{% url 'post_create' %}">게시글 만들기</a>
+        <a href="{% url 'story_create' %}">스토리 올리기</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' user.id %}">프로필</a>
+        {% endif %}
+    </div>
+
+    <!-- 메인 -->
+    <div class="main">
+        <!-- 스토리 -->
+        <div class="story-bar">
+            {% for story in stories %}
+                <img src="{{ story.image.url }}" width="70" height="70"
+                     style="border-radius:50%; cursor:pointer;"
+                     onclick="openStory('{{ story.image.url }}')">
+            {% endfor %}
+        </div>
+
+        <!-- 게시글들 -->
+        {% for post in posts %}
+        <div class="post-card">
+            <strong><a href="{% url 'profile' post.author.id %}">{{ post.author.username }}</a></strong>
+            {% if post.image %}
+                <img class="post-img" src="{{ post.image.url }}">
+            {% endif %}
+            <p>{{ post.content }}</p>
+
+            <!-- 좋아요 -->
+            <button class="like-btn" data-post-id="{{ post.pk }}">
+                {% if user in post.likes.all %}❤️{% else %}🤍{% endif %}
+            </button>
+            <span id="like-count-{{ post.pk }}">{{ post.likes.count }}</span>개
+
+            <!-- 댓글 목록 -->
+            <div id="comments-{{ post.pk }}">
+                {% for comment in post.comments.all %}
+                <div id="comment-{{ comment.pk }}">
+                    <strong>{{ comment.author.username }}</strong> {{ comment.content }}
+                    {% if comment.author == user %}
+                        <button onclick="deleteComment({{ comment.pk }}, {{ post.pk }})">삭제</button>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- 댓글 입력 -->
+            <div>
+                <input type="text" id="comment-input-{{ post.pk }}" placeholder="댓글 달기...">
+                <button onclick="addComment({{ post.pk }})">게시</button>
+            </div>
+
+            {% if post.author == user %}
+                <a href="{% url 'post_update' post.pk %}">수정</a>
+                <a href="{% url 'post_delete' post.pk %}">삭제</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <!-- 추천 유저 -->
+        <div class="suggested">
+            <h3>회원님을 위한 추천</h3>
+            {% for u in suggested %}
+            <div>
+                <a href="{% url 'profile' u.id %}">{{ u.username }}</a>
+                <button class="follow-btn" data-user-id="{{ u.id }}">팔로우</button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- 스토리 모달 -->
+    <div id="story-modal" style="display:none; position:fixed; top:0; left:0;
+         width:100%; height:100%; background:rgba(0,0,0,0.7);
+         justify-content:center; align-items:center; z-index:100;">
+        <span onclick="closeStory()" style="position:absolute; top:20px; right:30px;
+              color:white; font-size:30px; cursor:pointer;">×</span>
+        <img id="story-modal-img" src="" style="max-width:400px; max-height:80%;">
+    </div>
+
+    <script>
+    // ===== 좋아요 =====
+    document.querySelectorAll('.like-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const postId = this.dataset.postId;
+            fetch(`/post/${postId}/like/`, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+            })
+            .then(response => response.json())
+            .then(data => {
+                btn.textContent = data.liked ? '❤️' : '🤍';
+                document.getElementById('like-count-' + postId).textContent = data.like_count;
+            });
+        });
+    });
+
+    // ===== 댓글 달기 =====
+    function addComment(postId) {
+        const input = document.getElementById('comment-input-' + postId);
+        const content = input.value;
+        if (!content) return;
+
+        fetch(`/post/${postId}/comment/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `content=${encodeURIComponent(content)}`,
+        })
+        .then(response => response.json())
+        .then(data => {
+            const commentsDiv = document.getElementById('comments-' + postId);
+            const newComment = document.createElement('div');
+            newComment.id = 'comment-' + data.comment_id;
+            newComment.innerHTML = `<strong>${data.author}</strong> ${data.content}
+                <button onclick="deleteComment(${data.comment_id}, ${postId})">삭제</button>`;
+            commentsDiv.appendChild(newComment);
+            input.value = '';
+        });
+    }
+
+    // ===== 댓글 삭제 =====
+    function deleteComment(commentId, postId) {
+        fetch(`/comment/${commentId}/delete/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') },
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('comment-' + commentId).remove();
+        });
+    }
+
+    // ===== 팔로우 =====
+    document.querySelectorAll('.follow-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const userId = this.dataset.userId;
+            fetch(`/follow/${userId}/`, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+            })
+            .then(response => response.json())
+            .then(data => {
+                btn.textContent = data.following ? '팔로잉' : '팔로우';
+            });
+        });
+    });
+
+    // ===== 스토리 모달 =====
+    function openStory(imageUrl) {
+        document.getElementById('story-modal-img').src = imageUrl;
+        document.getElementById('story-modal').style.display = 'flex';
+    }
+    function closeStory() {
+        document.getElementById('story-modal').style.display = 'none';
+    }
+
+    // ===== CSRF 토큰 =====
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    </script>
+</body>
+</html>

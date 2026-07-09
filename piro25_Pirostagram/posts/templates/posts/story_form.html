@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="UTF-8"><title>스토리 올리기</title></head>
+<body>
+    <h1>스토리 올리기</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="images" multiple accept="image/*">
+        <button type="submit">업로드</button>
+    </form>
+    <a href="{% url 'post_list' %}">홈으로</a>
+</body>
+</html>
