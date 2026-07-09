@@ -9,6 +9,7 @@ SWIDEA_SITE/db.sqlite3
 # piro25_Pirostagram
 piro25_Pirostagram/venv/
 piro25_Pirostagram/db.sqlite3
+piro25_Pirostagram/.env 
 
 # 공통
 **/__pycache__/
