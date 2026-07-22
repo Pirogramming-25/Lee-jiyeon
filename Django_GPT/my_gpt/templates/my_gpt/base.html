@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'my_gpt/css/style.css' %}" />
+    <title>{% block title %}Django GPT{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <nav class="tabbar">
+            <a class="nav-link {% if active_tab == 'sentiment' %}active{% endif %}"
+               href="{% url 'my_gpt:sentiment' %}">감정 분석</a>
+            <a class="nav-link {% if active_tab == 'summarize' %}active{% endif %}"
+               href="{% url 'my_gpt:summarize' %}">문서 요약</a>
+            <a class="nav-link {% if active_tab == 'moderate' %}active{% endif %}"
+               href="{% url 'my_gpt:moderate' %}">유해 표현 분석</a>
+            <a class="nav-link {% if active_tab == 'combo' %}active{% endif %}"
+               href="{% url 'my_gpt:combo' %}">복합 분석</a>
+        </nav>
+        <div class="auth-links">
+            {% if user.is_authenticated %}
+                <span>{{ user.username }}</span>
+                <form method="post" action="{% url 'logout' %}" class="logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn">로그아웃</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">로그인</a>
+            {% endif %}
+        </div>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <script src="{% static 'my_gpt/js/common.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
