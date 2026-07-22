@@ -16,9 +16,14 @@ def get_summarizer():
     )
 
 
-def summarize_text(text):
+def summarize_text(text, sample=False):
     summarizer = get_summarizer()
-    output = summarizer(text, max_length=180, min_length=40)[0]
+
+    kwargs = {"max_length": 180, "min_length": 40}
+    if sample:
+        kwargs.update(do_sample=True, top_p=0.9, temperature=0.8)
+
+    output = summarizer(text, **kwargs)[0]
     summary = output["summary_text"].strip()
 
     ratio = round(len(summary) / len(text) * 100, 2)

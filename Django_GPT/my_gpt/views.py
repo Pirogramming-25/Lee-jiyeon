@@ -13,6 +13,8 @@ from .services.summarizer import summarize_text, MODEL_ID as SUMMARIZE_MODEL
 
 from .services.moderator import moderate_text, MODEL_ID as MODERATE_MODEL
 
+from .services.combo import run_combo
+
 logger = logging.getLogger(__name__)
 
 
@@ -142,6 +144,56 @@ def moderate_run(request):
         input_text=text,
         output_text=f"{result['highest_label']} ({result['highest_score']}%)",
         result_data={"all_scores": result["all_scores"]},
+    )
+
+    return JsonResponse(result)
+
+@model_login_required
+def combo(request):
+    histories = _recent_histories(request.user, InferenceHistory.Task.COMBO)
+    return render(request, "my_gpt/combo.html", {
+        "active_tab": "combo",
+        "histories": histories,
+    })
+
+
+@require_POST
+@model_login_required
+def combo_run(request):
+    try:
+        body = json.loads(request.body.decode("utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return JsonResponse({"error": "올바른 요청이 아닙니다."}, status=400)
+
+    text = str(body.get("text") or "").strip()
+
+    # 복합: 200~5000자
+    if not text:
+        return JsonResponse({"error": "분석할 내용을 입력해주세요."}, status=400)
+    if len(text) < 200:
+        return JsonResponse({"error": "200자 이상 입력해주세요."}, status=400)
+    if len(text) > 5000:
+        return JsonResponse({"error": "5,000자 이하로 입력해주세요."}, status=400)
+
+    try:
+        result = run_combo(text)
+    except Exception:
+        logger.exception("Combo inference failed.")
+        return JsonResponse({"error": "모델 실행에 실패했습니다."}, status=502)
+
+    # 복합 기록 저장
+    InferenceHistory.objects.create(
+        user=request.user,
+        task=InferenceHistory.Task.COMBO,
+        input_text=text,
+        output_text=result["summary"],
+        result_data={
+            "sentiment": result["sentiment"],
+            "toxicity": {
+                "highest_label": result["toxicity"]["highest_label"],
+                "highest_score": result["toxicity"]["highest_score"],
+            },
+        },
     )
 
     return JsonResponse(result)

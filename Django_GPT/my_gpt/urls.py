@@ -6,11 +6,6 @@ from . import views
 
 app_name = "my_gpt"
 
-
-def _todo(request):
-    return HttpResponse("준비 중")
-
-
 urlpatterns = [
     path("", RedirectView.as_view(pattern_name="my_gpt:sentiment"), name="home"),
 
@@ -20,7 +15,6 @@ urlpatterns = [
     path("summarize/run/", views.summarize_run, name="summarize_run"),
     path("moderate/", views.moderate, name="moderate"),
     path("moderate/run/", views.moderate_run, name="moderate_run"),
-
-    # 아직 미구현 — 임시로 막아둠
-    path("combo/", _todo, name="combo"),
+    path("combo/", views.combo, name="combo"),
+    path("combo/run/", views.combo_run, name="combo_run"),
 ]

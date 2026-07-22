@@ -16,11 +16,12 @@ Hugging Face `pipeline()`을 활용해 세 가지 AI 기능을 각각 다른 URL
   - 문서 요약: 요약문 + 원문/요약문 길이 + 요약 비율
   - 유해 표현: toxic / severe_toxic / obscene / threat / insult / identity_hate (멀티 레이블 점수)
 
+
 ## 모델 라이선스
 
-- cardiffnlp/twitter-roberta-base-sentiment-latest — (모델 카드 확인 후 기재)
-- sshleifer/distilbart-cnn-6-6 — (모델 카드 확인 후 기재)
-- unitary/toxic-bert — (모델 카드 확인 후 기재)
+- cardiffnlp/twitter-roberta-base-sentiment-latest — CC BY 4.0
+- sshleifer/distilbart-cnn-6-6 — Apache 2.0
+- unitary/toxic-bert — Apache 2.0
 
 ## 실행 방법
 
