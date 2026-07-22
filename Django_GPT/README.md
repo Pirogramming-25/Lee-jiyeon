@@ -9,6 +9,7 @@ Hugging Face `pipeline()`을 활용해 세 가지 AI 기능을 각각 다른 URL
 | 감정 분석 | `/sentiment/` | 영어 문장 감정 분석 | cardiffnlp/twitter-roberta-base-sentiment-latest | text-classification | 비로그인 허용 |
 | 문서 요약 | `/summarize/` | 영어 문서 요약 | sshleifer/distilbart-cnn-6-6 | summarization | 로그인 필요 |
 | 유해 표현 분석 | `/moderate/` | 영어 문장 유해성 분석 | unitary/toxic-bert | text-classification | 로그인 필요 |
+| 복합 분석 | `/combo/` | 리뷰 요약→감정→유해 파이프라인 체이닝 | (위 3개 모델 순차 사용) | summarization → text-classification | 로그인 필요 |
 
 - **입력 언어:** 전 기능 영어
 - **출력 레이블**
@@ -56,3 +57,4 @@ python manage.py runserver --noreload
 - 루트(`/`) 접속 시 `/sentiment/`로 자동 이동합니다.
 - `/summarize/`, `/moderate/`는 로그인이 필요하며, 비로그인 접근 시 로그인 페이지로 이동한 뒤 로그인하면 원래 페이지로 복귀합니다.
 - 회원가입 기능은 제공하지 않으며, `createsuperuser` 또는 Django Admin에서 계정을 생성합니다.
+- `/combo/`(챌린지)는 요약 모델의 출력을 감정·유해 분석의 입력으로 전달하는 파이프라인 체이닝으로 동작하며, 재생성 시 모델을 다시 실행합니다.
