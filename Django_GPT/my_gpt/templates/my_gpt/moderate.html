@@ -1,0 +1,36 @@
+{% extends "my_gpt/base.html" %}
+{% load static %}
+
+{% block title %}유해 표현 분석{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <h1>유해 표현 분석</h1>
+    <p class="model-info">
+        사용 모델: {{ model_id }} · 입력 언어: 영어
+    </p>
+
+    <textarea id="input" maxlength="1000"
+              placeholder="분석할 영어 문장을 입력하세요."></textarea>
+    <button id="run" class="run-button">유해 표현 분석 실행</button>
+
+    <div id="status" class="status" hidden>처리 중...</div>
+    <div id="result" class="result"></div>
+    <div id="error" class="error" hidden></div>
+
+    <div class="history">
+        <h3>최근 실행 기록</h3>
+        <div id="history">
+            {% for h in histories %}
+            <div class="history-item">{{ h.output_text }} — {{ h.input_text|truncatechars:40 }}</div>
+            {% empty %}
+            <div class="history-item">기록이 없습니다.</div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'my_gpt/js/moderate.js' %}"></script>
+{% endblock %}

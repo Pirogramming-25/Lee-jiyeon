@@ -1,0 +1,39 @@
+{% extends "my_gpt/base.html" %}
+{% load static %}
+
+{% block title %}복합 분석{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <h1>복합 AI 분석</h1>
+    <p class="model-info">
+        요약 → 감정 분석 → 유해 표현 분석 순서로 실행됩니다 · 입력 언어: 영어
+    </p>
+
+    <textarea id="input" maxlength="5000"
+              placeholder="영어 고객 리뷰 또는 피드백을 입력하세요. (200자 이상)"></textarea>
+    <div style="display:flex; gap:8px; margin-top:12px;">
+        <button id="run" class="run-button">복합 분석 실행</button>
+        <button id="regenerate" class="run-button" hidden>재생성</button>
+    </div>
+
+    <div id="status" class="status" hidden>처리 중...</div>
+    <div id="result" class="result"></div>
+    <div id="error" class="error" hidden></div>
+
+    <div class="history">
+        <h3>최근 실행 기록</h3>
+        <div id="history">
+            {% for h in histories %}
+            <div class="history-item">{{ h.output_text|truncatechars:60 }}</div>
+            {% empty %}
+            <div class="history-item">기록이 없습니다.</div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'my_gpt/js/combo.js' %}"></script>
+{% endblock %}
